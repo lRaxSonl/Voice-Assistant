@@ -5,7 +5,6 @@ model = Model(r'assets\model_small') #модель
 recognize = KaldiRecognizer(model, 16000)
 
 def listen():
- 
     mic = pyaudio.PyAudio() #микрофон
     stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
     stream.start_stream() #начинаем прослушиваем канал микрофона
