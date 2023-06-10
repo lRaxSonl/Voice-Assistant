@@ -8,7 +8,7 @@ class Listener:
         
         mic = pyaudio.PyAudio() #микрофон
         self.stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
-        
+
 
     def start_listener(self):
         self.stream.start_stream() #начинаем прослушиваем канал микрофона

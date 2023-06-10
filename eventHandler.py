@@ -1,15 +1,18 @@
-import webbrowser as web
+import webbrowser as wb
 from datetime import datetime
-import torch, time
+import torch, time, random, openai
 import numpy as np
 import sounddevice as sd
+from translate import Translator
+from config import MUSIC, GPT_API
 
+#открывает браузер
 def openBrowser():
-    w = web.get()
+    w = wb.get()
     w.open('https://google.com')
 
 
-
+#переводит числа в слова (нужно для синтеза речи)
 def number_to_words(number):
     word_map = {
         0: 'ноль', 1: 'один', 2: 'два', 3: 'три', 4: 'четыре', 5: 'пять',
@@ -38,18 +41,18 @@ def number_to_words(number):
     return words
 
 
-
+#показывает текущее время
 def timeNow():
     current_datetime = datetime.now()
     return f"сейчас {number_to_words(current_datetime.hour)} часов {number_to_words(current_datetime.minute)} минут"
 
 
-
+#синтез речи
 def speak(text):
     #it was taken from https://www.youtube.com/watch?v=XTeGvaDaraI
     language = 'ru'
     model_id = 'ru_v3'
-    sample_rate = 48000
+    sample_rate = 48000 #частота дискритизации
     speaker = 'aidar' # aidar, baya, kseniya, xenia, random
     put_accent = True
     put_yo = True
@@ -72,3 +75,31 @@ def speak(text):
     sd.play(audio, sample_rate * 1.05)
     time.sleep((len(audio) / sample_rate) + 0.5)
     sd.stop()
+    
+    
+#проигрывания музыки из списка
+def music():
+    w = wb.get()
+    w.open(random.choice(MUSIC))
+
+#запрос к ChatGPT
+def gptReq(request):
+    #request = Translator(from_lang='ru', to_lang='en').translate(request)
+    openai.api_key = GPT_API
+    response = openai.Completion.create(
+                                        model="text-davinci-003",
+                                        prompt=request,
+                                        temperature=0.5,
+                                        max_tokens=1000,
+                                        top_p=1.0,
+                                        frequency_penalty=0.5,
+                                        presence_penalty=0.0,
+                                        stop=''
+                                        )
+    
+    #return Translator(from_lang='en', to_lang='ru').translate(response["choices"][0]["text"])
+    return response["choices"][0]["text"]
+
+#поиск в интернете
+def search(request):
+    wb.open(f'https://www.google.com/search?q={request}&source=hp&ei=92yEZNXQFYySxc8PwvmZyAs&iflsig')

@@ -1,57 +1,33 @@
-from listener import Listener
-import config, eventHandler
+from customtkinter import *
 from playsound import playsound as pl
-from eventHandler import speak
+import commandHandler
+import threading
 
-listen = Listener()
-print("\n\n\nговорите...")
+class VoiceAssistant(CTk):
+    def __init__(self):
+        super().__init__()
 
-def cmdFilter(response):    #фильтрует команду
-    for i in config.TBR:
-        cmd = response.replace(i, "")   #убирате все слова на удаление(находятся в файле конфиг в переменной "TBR" - To Be Remove)
+        self.title('Voice Assistant')
+        self.geometry('500x550+550+40')
+        self.resizable(False, False)
         
-    for i in config.NAME:
-        cmd = cmd.replace(i, "")    #убирает все имена с ответа
-    return cmd
-
-
-def cmdHandler(response):
-    response_sp = response.split()
-    print(response_sp)
-    print(response)
-    for name in config.NAME:    #ищет имя
-        if name in response_sp:
-            nameI = response_sp.index(name) #находит индекс имени ассистента в ответе
-
-            if len(response_sp)-1 == nameI: #если после того, как прозвучало слово помошник больше нет слов, то он спрашивает что вам нжно и вы можете повторить команду
-                listen.stop_listener()  #остановка прослушивание
-                pl(r'assets\audio\jarvis\yes-sir.wav')
-                cmdHandler(listen.start_listener()) #повторный вызов функции
-                break
-            else:
-                cmd = cmdFilter(response).strip()   #фильтрация команды
-                continue
+#параметры виджетов
+    def widgets(self):
+        self.button = CTkButton(self, text="Start Assistant", width=60, height=60, command=self.start_assistant)
+        self.optionmenu_1 = CTkOptionMenu(self, values=["Dark", "Light"], command=lambda x: set_appearance_mode(self.optionmenu_1.get().lower()))
+        self.optionmenu_1.set("Theme mode")
         
-        else:
-            cmd = cmdFilter(response).strip()
-            continue
-
-    for cmd_help, cmd_browser in zip(config.CMD_LIST["help"], config.CMD_LIST["open_browser"]):
-        if cmd_help in cmd:
-            speak("я умею: открывать браузер, показывать время")
-            break
-                
-        if cmd_browser in cmd:
-            pl(r'assets\audio\jarvis\right.wav')
-            eventHandler.openBrowser()
-            break
-
-    for cmd_time in config.CMD_LIST["time"]:
-        if cmd_time in cmd:
-            speak(eventHandler.timeNow())
-            break
+#прорисовка виджетов
+    def setWidgets(self):
+        self.optionmenu_1.grid(row=0, column=1, pady=10, padx=1)
+        self.button.place(x=215, y=210)
         
-        
+#страрт ассистента в отдельном потоке
+    def start_assistant(self):
+        threading.Thread(target=commandHandler.startListening).start()
 
 if __name__ == "__main__":
-    cmdHandler(listen.start_listener())
+    app = VoiceAssistant()
+    app.widgets()
+    app.setWidgets()
+    app.mainloop()
