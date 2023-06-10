@@ -22,7 +22,7 @@ class VoiceAssistant(CTk):
         self.optionmenu_1.grid(row=0, column=1, pady=10, padx=1)
         self.button.place(x=215, y=210)
         
-#страрт ассистента в отдельном потоке
+#старт ассистента в отдельном потоке
     def start_assistant(self):
         threading.Thread(target=commandHandler.startListening).start()
 
