@@ -3,7 +3,7 @@ import config, eventHandler
 from playsound import playsound as pl
 from eventHandler import speak, gptReq
 
-#фильрация команд
+#фильтрация команд
 def cmdFilter(response):
     for i in config.TBR:
         cmd = response.replace(i, "")   #убирате все слова на удаление(находятся в файле конфиг в переменной "TBR" - To Be Remove)
