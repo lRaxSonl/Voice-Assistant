@@ -37,7 +37,7 @@ def cmdHandler(response):
     for cmd_help, cmd_browser in zip(config.CMD_LIST["help"], config.CMD_LIST["open_browser"]):
         if cmd_help in cmd:
             check_cmd = True
-            speak("я умею: открывать браузер, показывать время")
+            speak("я умею: открывать браузер, показывать время, искать в браузере по вашему запросу, обращаться к чат гпт, включать музыку")
             break
                 
         if cmd_browser in cmd:
